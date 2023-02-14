@@ -10,6 +10,18 @@ export class UsersService {
 
   create(email: string, password: string) {
     const user = this.repo.create({ email, password });
-    return this.repo.save(user);
+    return this.repo.save(user); //save after creating entity instance
   }
+
+  findOne(id: number) {
+    return this.repo.findOneBy({ id });
+  }
+
+  find(email: string) {
+    return this.repo.find({ where: { email } });
+  }
+
+  update() {}
+
+  remove() {}
 }
