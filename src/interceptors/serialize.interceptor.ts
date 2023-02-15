@@ -8,8 +8,13 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { plainToClass } from 'class-transformer';
 
+//it means class type
+interface ClassCosntructor {
+  new (...args: any[]): {};
+}
+
 // custom decorator
-export function Serialize(dto: any) {
+export function Serialize(dto: ClassCosntructor) {
   return UseInterceptors(new SerializerInterceptor(dto));
 }
 

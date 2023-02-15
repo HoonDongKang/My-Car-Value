@@ -8,20 +8,15 @@ import {
   Patch,
   Post,
   Query,
-  UseInterceptors,
-  ClassSerializerInterceptor,
 } from '@nestjs/common';
-import {
-  Serialize,
-  SerializerInterceptor,
-} from 'src/interceptors/serialize.interceptor';
-import { serialize } from 'v8';
+import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { CreateUserDto } from './dtos/create-users.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserDto } from './dtos/user.dto';
 import { UsersService } from './users.service';
 
 @Controller('auth')
+@Serialize(UserDto)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -31,7 +26,6 @@ export class UsersController {
   }
 
   // @UseInterceptors(new SerializerInterceptor(UserDto))
-  @Serialize(UserDto)
   @Get('/:id')
   async findUser(@Param('id') id: string) {
     console.log('handler is running');
