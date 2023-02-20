@@ -10,10 +10,21 @@ describe('AuthService', () => {
 
   beforeEach(async () => {
     // Create a fake copy of the users service
+    const users: User[] = [];
     fakeUsersService = {
-      find: () => Promise.resolve([]),
-      create: (email: string, password: string) =>
-        Promise.resolve({ id: 1, email, password } as User),
+      find: (email: string) => {
+        const filterUsers = users.filter((user) => user.email === email);
+        return Promise.resolve(filterUsers);
+      },
+      create: (email: string, password: string) => {
+        const user = {
+          id: Math.floor(Math.random() * 999999),
+          email,
+          password,
+        } as User;
+        users.push(user);
+        return Promise.resolve(user);
+      },
     };
 
     const module = await Test.createTestingModule({
@@ -42,9 +53,8 @@ describe('AuthService', () => {
   });
 
   it('throws an error if user signs up with email that is in use.', async () => {
-    fakeUsersService.find = () =>
-      Promise.resolve([{ id: 1, email: 'a', password: '1' } as User]);
-    await expect(service.signup('asdf@asdf.com', 'asdf')).rejects.toThrow(
+    await service.signup('hello@hello.com', 'hello');
+    await expect(service.signup('hello@hello.com', 'hello')).rejects.toThrow(
       BadRequestException,
     );
   });
@@ -56,8 +66,7 @@ describe('AuthService', () => {
   });
 
   it('throws if an invalid password is provided', async () => {
-    fakeUsersService.find = () =>
-      Promise.resolve([{ email: 'test@test.com', password: 'test' } as User]);
+    await service.signup('hello@hello.com', 'test'); // invalid password
 
     await expect(service.signin('hello@hello.com', 'hello')).rejects.toThrow(
       BadRequestException,
@@ -65,18 +74,9 @@ describe('AuthService', () => {
   });
 
   it('returns a user if correct password is provided', async () => {
-    fakeUsersService.find = () =>
-      Promise.resolve([
-        {
-          email: 'hello@hello.com',
-          password:
-            '3cf605d81aee6324.4fdd0625252ec8894f5be31103f342406744ceb0677398ae9416e3630168691f',
-        } as User,
-      ]);
+    await service.signup('hello@hello.com', 'hello');
 
     const user = await service.signin('hello@hello.com', 'hello');
     expect(user).toBeDefined();
-    // const user = await service.signup('hello@hello.com', 'hello');
-    // console.log(user);
   });
 });
