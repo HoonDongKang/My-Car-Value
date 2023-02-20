@@ -10,7 +10,7 @@ import { plainToClass } from 'class-transformer';
 
 //it means class type
 interface ClassCosntructor {
-  new (...args: any[]): {};
+  new (...args: any[]): object;
 }
 
 // custom decorator
