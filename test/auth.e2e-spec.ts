@@ -27,4 +27,22 @@ describe('Authentication Systme', () => {
         expect(email).toEqual(email);
       });
   });
+
+  //cookie는 test에서 저장이 되지 않음
+  it('signup as a new user then get the currently logged in user', async () => {
+    const email = 'hello@hello.com';
+    const res = await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({ email, password: 'hello' })
+      .expect(201);
+
+    const cookie = res.get('Set-Cookie'); // cookie 가져오기
+
+    const { body } = await request(app.getHttpServer())
+      .get('/auth/whoami')
+      .set('Cookie', cookie)
+      .expect(200);
+
+    expect(body.email).toEqual(email);
+  });
 });
