@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/users/user.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Report {
@@ -25,4 +26,10 @@ export class Report {
 
   @Column()
   mileage: number;
+
+  @ManyToOne(() => User, (user) => user.reports)
+  // 첫 argument가 function인 이유
+  // 첫 동작시 entity가 다 불러와지지 않아 undefined가 뜰 수 있음 (circular dependency)
+  // function을 통해 확실히 동작이 된 후 association
+  user: User;
 }
