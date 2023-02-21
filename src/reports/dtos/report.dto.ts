@@ -18,6 +18,8 @@ export class ReportDto {
   model: string;
   @Expose()
   mileage: string;
+  @Expose()
+  approved: boolean;
 
   //user {} 에서 id만 가져오기
   @Transform(({ obj }) => obj.user.id)
