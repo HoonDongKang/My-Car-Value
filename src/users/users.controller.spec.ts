@@ -22,8 +22,20 @@ describe('UsersController', () => {
       find: (email: string) => {
         return Promise.resolve([{ id: 1, email, password: 'hello' } as User]);
       },
-      // remove: () => {}
-      // update: () => {},
+      remove: (id: number) => {
+        return Promise.resolve({
+          id,
+          email: 'hello@hello.com',
+          password: 'hello',
+        } as User);
+      },
+      update: (id: number, attr: Partial<User>) => {
+        return Promise.resolve({
+          id,
+          email: attr.email,
+          password: attr.password,
+        } as User);
+      },
     };
     fakeAuthService = {
       // signup: () => {},
@@ -79,5 +91,18 @@ describe('UsersController', () => {
     );
     expect(user.id).toEqual(1);
     expect(session.userId).toEqual(1);
+  });
+
+  it('removeUser removes user Data and return user', async () => {
+    const user = await controller.removeUser('1');
+    expect(user).toBeDefined();
+  });
+
+  it('updateUser updates data and return user', async () => {
+    const user = await controller.updateUser('1', {
+      email: 'test@test.com',
+      password: 'test',
+    });
+    expect(user.email).toEqual('test@test.com');
   });
 });
