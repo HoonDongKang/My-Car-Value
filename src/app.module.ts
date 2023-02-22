@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
+import { Module, ValidationPipe, MiddlewareConsumer } from '@nestjs/common';
 import { APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -16,17 +16,7 @@ const cookieSession = require('cookie-session');
       isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
-    TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        return {
-          type: 'sqlite',
-          database: config.get<string>('DB_NAME'),
-          synchronize: true,
-          entities: [User, Report],
-        };
-      },
-    }),
+    TypeOrmModule.forRoot(),
     UsersModule,
     ReportsModule,
   ],
@@ -36,18 +26,19 @@ const cookieSession = require('cookie-session');
     {
       provide: APP_PIPE,
       useValue: new ValidationPipe({
-        whitelist: true, // request 요청 시 필요 parma만 가져옴
+        whitelist: true,
       }),
     },
   ],
 })
 export class AppModule {
+  constructor(private configService: ConfigService) {}
+
   configure(consumer: MiddlewareConsumer) {
-    //모든 route에 session 적용
     consumer
       .apply(
         cookieSession({
-          keys: ['asdfasdf'],
+          keys: [this.configService.get('COOKIE_KEY')],
         }),
       )
       .forRoutes('*');
