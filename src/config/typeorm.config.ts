@@ -31,11 +31,9 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
         // synchronize: JSON.parse(this.configService.get<string>('SYNCHRONIZE')),
         url: process.env.DATABASE_URL,
         autoLoadEntities: true,
-        migrationsRun: JSON.parse(
-          this.configService.get<string>('MIGRATIONS_RUN'),
-        ),
+        migrationsRun: true,
         ssl: {
-          rejectUnauthorized: JSON.parse(this.configService.get<string>('SSL')),
+          rejectUnauthorized: false,
         },
       };
       console.log(obj);
